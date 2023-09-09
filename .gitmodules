@@ -1,0 +1,9 @@
+[submodule "modules/core-v-mcu"]
+	path = modules/core-v-mcu
+	url = git@github.com:jpc-lip6/core-v-mcu.git
+[submodule "modules/UVM"]
+	path = modules/UVM
+	url = git@github.com:jpc-lip6/UVM.git
+[submodule "modules/c4m-pdk-gf180mcu"]
+	path = modules/c4m-pdk-gf180mcu
+	url = https://gitlab.com/Chips4Makers/c4m-pdk-gf180mcu.git

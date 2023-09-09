@@ -4,7 +4,7 @@ from   pathlib import Path
 from   coriolis.designflow.technos import setupGf180mcu_c4m
 
 if 'GITHUB_WORKFLOW' in os.environ:
-    pdkMasterTop = Path('../../c4m-pdk-gf180mcu/C4M.gf180mcu')
+    pdkMasterTop = Path('../../openpdks-c4m-gf180mcu/C4M.gf180mcu')
 else:
     pdkMasterTop = Path('/usr/share/open_pdks/C4M.gf180mcu')
 setupGf180mcu_c4m( checkToolkit=Path('..'), pdkMasterTop=pdkMasterTop )

@@ -3,7 +3,7 @@ import sys
 import traceback
 from   coriolis.Hurricane  import DbU, Breakpoint
 from   coriolis            import Cfg
-from   coriolis.CRL        import AllianceFramework, Blif
+from   coriolis.CRL        import AllianceFramework, Blif, Catalog
 from   coriolis.helpers    import loadUserSettings, setTraceLevel, overlay, trace, l, u, n
 from   coriolis.helpers.io import ErrorMessage, WarningMessage, catch
 loadUserSettings()
@@ -42,7 +42,9 @@ def scriptMain ( **kw ):
         cg           = af.getCellGauge()
         sliceHeight  = cg.getSliceHeight()
         cell, editor = plugins.kwParseMain( **kw )
-        cell = Blif.load( 'cv32e40p_core' )
+        cell = af.getCell( 'cv32e40p_core', Catalog.State.Logical )
+        if not cell:
+            cell = Blif.load( 'cv32e40p_core' )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )

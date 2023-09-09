@@ -87,6 +87,8 @@ jobs:
               LIBDIR=${{ env.installDir }}/lib64/yosys \
               DATDIR=${{ env.installDir }}/share/yosys \
               install
+     - name: Link Yosys into /usr/bin
+       run: |
          sudo ln -s ${{ env.installDir }}/bin/* /usr/bin/
      - name: Check Yosys share directory
        run: ls -1 ${{ github.workspace }}/coriolis-2.x/Linux.x86_64/Release.Shared/install/share/yosys

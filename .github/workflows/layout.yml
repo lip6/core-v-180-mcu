@@ -106,5 +106,10 @@ jobs:
        uses: actions/upload-artifact@v3
        with:
          name: cv32e40p-gds
-         path: ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.gds
+         path: |
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core.v
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core.blif
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.gds
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.vst
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.spi
          retention-days: 5

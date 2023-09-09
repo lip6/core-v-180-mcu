@@ -30,7 +30,7 @@ def scriptMain ( **kw ):
         cfg.misc.bug           = False
         cfg.misc.verboseLevel1 = True
         cfg.misc.verboseLevel2 = True
-        cfg.misc.logMode       = False
+        cfg.misc.logMode       = True
         cfg.etesian.graphics   = 2
 
     global af

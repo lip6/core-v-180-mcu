@@ -15,12 +15,6 @@ jobs:
          path:       coriolis-2.x/src/core-v-180-mcu
      - uses: actions/checkout@v3
        with:
-         repository: lip6/coriolis
-         submodules: true
-         ref:        wip-gf180mcu
-         path:       coriolis-2.x/src/coriolis
-     - uses: actions/checkout@v3
-       with:
          repository: lip6/alliance
          path:       coriolis-2.x/src/alliance
      - uses: actions/checkout@v3
@@ -32,15 +26,6 @@ jobs:
          repository: google/gf180mcu-pdk
          submodules: true
          path:       coriolis-2.x/src/gf180mcu-pdk
-     - uses: actions/checkout@v3
-       with:
-         repository: YosysHQ/yosys
-         path:       coriolis-2.x/src/yosys
-         ref:        yosys-0.24
-     - uses: actions/checkout@v3
-       with:
-         repository: zachjs/sv2v
-         path:       coriolis-2.x/src/sv2v
      - name: Update APT cache
        run: sudo apt-get update
      - name: Install software dependencies
@@ -67,6 +52,11 @@ jobs:
          path: ${{ env.installDir }}
 
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+       uses: actions/checkout@v3
+       with:
+         repository: zachjs/sv2v
+         path:       coriolis-2.x/src/sv2v
+     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        name: Build sv2v
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
@@ -75,6 +65,12 @@ jobs:
          mkdir -p ${{ env.installDir }}/bin
          cp ./bin/sv2v ${{ env.installDir }}/bin
 
+     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+       uses: actions/checkout@v3
+       with:
+         repository: YosysHQ/yosys
+         path:       coriolis-2.x/src/yosys
+         ref:        yosys-0.24
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        name: Build Yosys
        run: |
@@ -98,6 +94,13 @@ jobs:
     #    export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
     #    ${{ github.workspace }}/coriolis-2.x/src/coriolis/bootstrap/allianceInstaller.sh --github-runner=${{ github.workspace }}
 
+     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+       uses: actions/checkout@v3
+       with:
+         repository: lip6/coriolis
+         submodules: true
+         ref:        wip-gf180mcu
+         path:       coriolis-2.x/src/coriolis
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        name: Build Coriolis
        run: |

@@ -29,7 +29,7 @@ def scriptMain ( **kw ):
         cfg.misc.paranoid      = False
         cfg.misc.bug           = False
         cfg.misc.verboseLevel1 = True
-        cfg.misc.verboseLevel2 = True
+        cfg.misc.verboseLevel2 = False
         cfg.misc.logMode       = True
         cfg.etesian.graphics   = 2
 

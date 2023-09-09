@@ -1,5 +1,5 @@
 
-name: Regression tests
+name: cv32e40p layout (GDS)
 on:   [workflow_dispatch]
 
 env:

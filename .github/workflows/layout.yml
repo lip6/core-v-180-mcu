@@ -29,6 +29,11 @@ jobs:
          path:       coriolis-2.x/src/alliance-check-toolkit
      - uses: actions/checkout@v3
        with:
+         repository: google/gf180mcu-pdk
+         submodules: true
+         path:       coriolis-2.x/src/gf180mcu-pdk
+     - uses: actions/checkout@v3
+       with:
          repository: YosysHQ/yosys
          path:       coriolis-2.x/src/yosys
          ref:        yosys-0.24
@@ -46,14 +51,14 @@ jobs:
                               libeigen3-dev liblemon-dev \
                               autotools-dev automake \
                               libxt-dev libxpm-dev libmotif-dev \
-                              tcl-dev libffi-dev haskell-stack wget
+                              tcl-dev libffi-dev haskell-stack wget unzip
      - name: ccache
        uses: hendrikmuhs/ccache-action@v1.2
      - name: Download & install C4M gf180mcu
        run: |
          cd ${{ github.workspace }}/coriolis-2.x/src/
-         wget https://gitlab.com/Chips4Makers/c4m-pdk-gf180mcu/-/archive/v0.0.3/c4m-pdk-gf180mcu-v0.0.3.tar.gz
-         tar zxvf c4m-pdk-gf180mcu-v0.0.3.tar.gz
+         wget https://download.opensuse.org/repositories/home:/chips4makers:/releases/xUbuntu_22.04/openpdks-c4m-gf180mcu_0.0.3.orig.tar.gz
+         tar zxvf openpdks-c4m-gf180mcu_0.0.3.orig.tar.gz
      - name: Build sv2v
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"

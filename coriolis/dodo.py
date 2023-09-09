@@ -304,10 +304,6 @@ ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ '{}.vst'.format( topName )
 rulePnR   = PnR     .mkRule( 'pnr'  , [ '{}_cts_r.gds'.format( topName )
                                       , '{}_cts_r.vst'.format( topName )
                                       , '{}_cts_r.spi'.format( topName )
-                                      , 'corona_cts_r.vst'
-                                      , 'corona_cts_r.spi'
-                                      , 'corona.vst'
-                                      , 'corona.spi'
                                       ]
                                     , [ruleB2V]
                                     , scriptMain )

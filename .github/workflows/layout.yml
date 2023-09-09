@@ -6,7 +6,7 @@ env:
    installDir: ${{ github.workspace }}/coriolis-2.x/Linux.x86_64/Release.Shared/install
 
 jobs:
-  Regression-Tests:
+  cv32e40p-layout:
     runs-on: ubuntu-latest
     steps:
      - uses: actions/checkout@v3
@@ -17,6 +17,7 @@ jobs:
        with:
          repository: lip6/coriolis
          submodules: true
+         ref:        wip-gf180mcu
          path:       coriolis-2.x/src/coriolis
      - uses: actions/checkout@v3
        with:
@@ -45,9 +46,14 @@ jobs:
                               libeigen3-dev liblemon-dev \
                               autotools-dev automake \
                               libxt-dev libxpm-dev libmotif-dev \
-                              tcl-dev libffi-dev haskell-stack
+                              tcl-dev libffi-dev haskell-stack wget
      - name: ccache
        uses: hendrikmuhs/ccache-action@v1.2
+     - name: Download & install C4M gf180mcu
+       run: |
+         cd ${{ github.workspace }}/coriolis-2.x/src/
+         wget https://gitlab.com/Chips4Makers/c4m-pdk-gf180mcu/-/archive/v0.0.3/c4m-pdk-gf180mcu-v0.0.3.tar.gz
+         tar zxvf c4m-pdk-gf180mcu-v0.0.3.tar.gz
      - name: Build sv2v
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"

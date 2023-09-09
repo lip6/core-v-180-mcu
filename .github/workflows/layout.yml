@@ -64,7 +64,7 @@ jobs:
        uses: actions/cache@v3
        with:
          key:  cache-tools
-         path: ${{ installDir }}
+         path: ${{ env.installDir }}
 
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        name: Build sv2v

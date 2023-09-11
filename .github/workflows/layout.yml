@@ -1,9 +1,17 @@
 
 name: cv32e40p layout (GDS)
-on:   [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      svTranslator:
+        description: 'SystemVerilog to Verilog translator to use'
+        default:     'sv2v'
+        type:        choice
+        options:
+          - sv2v
+          - svase
 
 env:
-   svTranslator: svase
    installDir:   ${{ github.workspace }}/coriolis-2.x/Linux.x86_64/Release.Shared/install
 
 jobs:
@@ -49,15 +57,15 @@ jobs:
        id:   cache-tools
        uses: actions/cache@v3
        with:
-         key:  cache-tools-${{ env.svTranslator }}
+         key:  cache-tools-${{ inputs.svTranslator }}
          path: ${{ env.installDir }}
 
-     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'sv2v') }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'sv2v') }}
        uses: actions/checkout@v3
        with:
          repository: zachjs/sv2v
          path:       coriolis-2.x/src/sv2v
-     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'sv2v') }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'sv2v') }}
        name: Build sv2v
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
@@ -66,17 +74,19 @@ jobs:
          mkdir -p ${{ env.installDir }}/bin
          cp ./bin/sv2v ${{ env.installDir }}/bin
 
-     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'svase') }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'svase') }}
        uses: actions/checkout@v3
        with:
          submodules: true
          repository: jpc-lip6/svase
          path:       coriolis-2.x/src/svase
-     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'svase') }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'svase') }}
        name: Build svase
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
          cd ${{ github.workspace }}/coriolis-2.x/src/svase
+         mkdir -p deps/install/lib
+         ln -s deps/install/lib deps/install/lib64
          make all
          mkdir -p ${{ env.installDir }}/bin
          cp ./build/svase ${{ env.installDir }}/bin
@@ -127,7 +137,7 @@ jobs:
 
      - name: Build the layout of cv32e40p
        run: |
-         export SV_TRANSLATOR=${{ env.svTranslator }}
+         export SV_TRANSLATOR=${{ inputs.svTranslator }}
          export CORIOLIS_TOP=${{ env.installDir }}
          cd ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis
          ../../alliance-check-toolkit/bin/crlenv.py --verbose

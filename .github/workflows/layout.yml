@@ -49,15 +49,15 @@ jobs:
        id:   cache-tools
        uses: actions/cache@v3
        with:
-         key:  cache-tools
+         key:  cache-tools-${{ env.svTranslator }}
          path: ${{ env.installDir }}
 
-     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'sv2v') }}
        uses: actions/checkout@v3
        with:
          repository: zachjs/sv2v
          path:       coriolis-2.x/src/sv2v
-     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'sv2v') }}
        name: Build sv2v
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
@@ -66,12 +66,12 @@ jobs:
          mkdir -p ${{ env.installDir }}/bin
          cp ./bin/sv2v ${{ env.installDir }}/bin
 
-     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'svase') }}
        uses: actions/checkout@v3
        with:
          repository: jpc-lip6/svase
          path:       coriolis-2.x/src/svase
-     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'svase') }}
        name: Build svase
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"

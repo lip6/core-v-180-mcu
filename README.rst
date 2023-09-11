@@ -13,6 +13,7 @@ to assemble the complete design flow and build the chip.
 
 For the design flow:
 
+* svase -- SystemVerilog translator, https://github.com/pulp-platform/svase
 * SV2V -- SystemVerilog translator, https://github.com/zachjs/sv2v
 * Yosys -- Logical Synthesis, https://github.com/YosysHQ/yosys/
 * Coriolis -- Physical P&R, https://github.com/lip6/coriolis/
@@ -29,6 +30,9 @@ You can generate the ``GDS`` layout using the Github ``CI``, with the action :
 ``cv32e40p layout (GDS)``. It will be put into an artifact at the end of the
 run. When run for the first time, it will rebuild all the tool and take a
 bit less than one hour. On subsequent ones, it should take about 8 minutes.
+
+You can select which SystemVerilog to Verilog translator you want to use,
+but for now, only ``sv2v`` is working.
 
 
 .. note:: This is only a very early version and only a demonstrator on

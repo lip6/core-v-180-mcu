@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       svTranslator:
-        description: 'SystemVerilog to Verilog translator to use'
+        description: 'SystemVerilog to Verilog translator'
         default:     'sv2v'
         type:        choice
         options:
@@ -85,8 +85,6 @@ jobs:
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
          cd ${{ github.workspace }}/coriolis-2.x/src/svase
-         mkdir -p deps/install/lib
-         ln -s deps/install/lib deps/install/lib64
          make all
          mkdir -p ${{ env.installDir }}/bin
          cp ./build/svase ${{ env.installDir }}/bin

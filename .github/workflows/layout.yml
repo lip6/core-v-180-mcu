@@ -69,6 +69,7 @@ jobs:
      - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'svase') }}
        uses: actions/checkout@v3
        with:
+         submodules: true
          repository: jpc-lip6/svase
          path:       coriolis-2.x/src/svase
      - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (env.svTranslator == 'svase') }}

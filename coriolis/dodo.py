@@ -256,7 +256,10 @@ class UVMFiles ( object ):
 
 from doDesign  import scriptMain
 
-useSVase  = False
+svTranslator = 'sv2v'
+if 'SV_TRANSLATOR' in os.environ:
+    svTranslator = os.environ['SV_TRANSLATOR'].lower()
+
 buildCv32 = True
 if buildCv32:
     svObjects = [ Cv32e40pFiles( 'rtl' ) ]
@@ -279,7 +282,7 @@ if buildCv32:
 else:
     svFiles.insert( 0, Path('rtl/core-v-mcu/top/core_v_mcu.sv' ))
 
-if useSVase:
+if svTranslator == 'svase':
     ruleSvase = Svase.mkRule( 'svase'
                             , '{}.v'.format( topName )
                             , svFiles

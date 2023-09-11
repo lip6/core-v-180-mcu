@@ -3,7 +3,8 @@ name: cv32e40p layout (GDS)
 on:   [workflow_dispatch]
 
 env:
-   installDir: ${{ github.workspace }}/coriolis-2.x/Linux.x86_64/Release.Shared/install
+   svTranslator: svase
+   installDir:   ${{ github.workspace }}/coriolis-2.x/Linux.x86_64/Release.Shared/install
 
 jobs:
   cv32e40p-layout:
@@ -68,6 +69,20 @@ jobs:
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        uses: actions/checkout@v3
        with:
+         repository: jpc-lip6/svase
+         path:       coriolis-2.x/src/svase
+     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+       name: Build svase
+       run: |
+         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+         cd ${{ github.workspace }}/coriolis-2.x/src/svase
+         make all
+         mkdir -p ${{ env.installDir }}/bin
+         cp ./build/svase ${{ env.installDir }}/bin
+
+     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+       uses: actions/checkout@v3
+       with:
          repository: YosysHQ/yosys
          path:       coriolis-2.x/src/yosys
          ref:        yosys-0.24
@@ -111,6 +126,7 @@ jobs:
 
      - name: Build the layout of cv32e40p
        run: |
+         export SV_TRANSLATOR=${{ env.svTranslator }}
          export CORIOLIS_TOP=${{ env.installDir }}
          cd ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis
          ../../alliance-check-toolkit/bin/crlenv.py --verbose

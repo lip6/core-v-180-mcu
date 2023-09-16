@@ -42,8 +42,7 @@ class Cv32e40pFiles ( object ):
 
     @staticmethod
     def filterOut ( rawSvFiles ):
-        stemExcludes = [ 'cv32e40p_core'
-                       , 'cv32e40p_core_log'
+        stemExcludes = [ 'cv32e40p_core_log'
                        , 'cv32e40p_register_file_latch'
                        , 'cv32e40p_prefetch_controller_sva'
                        ]
@@ -106,8 +105,7 @@ class CoreVFiles ( object ):
 
     @staticmethod
     def filterOut ( rawSvFiles ):
-        stemExcludes = [ 'core_v_mcu'
-                       , 'apb_efpga_demux'
+        stemExcludes = [ 'apb_efpga_demux'
                        , 'cv32e40p_core_log'
                        ]
         pathExcludes = [ 'fpga'
@@ -256,7 +254,7 @@ class UVMFiles ( object ):
 
 from doDesign  import scriptMain
 
-svTranslator = 'sv2v'
+svTranslator = 'synlig'
 if 'SV_TRANSLATOR' in os.environ:
     svTranslator = os.environ['SV_TRANSLATOR'].lower()
 
@@ -264,6 +262,7 @@ buildCv32 = True
 if buildCv32:
     svObjects = [ Cv32e40pFiles( 'rtl' ) ]
     topName   = 'cv32e40p_core'
+   #topName   = 'cv32e40p_alu_div'
 else:
     svObjects = [ UVMFiles(), CoreVFiles( 'rtl' ) ]
     topName   = 'core_v_mcu'
@@ -277,29 +276,42 @@ for svObject in svObjects:
     incdirs += svObject.incdirs
     libdirs += svObject.libdirs
     svFiles += svObject.svFiles
-if buildCv32:
-    svFiles.insert( 0, Path('rtl/vendor/openhwgroup_cv32e40p/rtl/cv32e40p_core.sv' ))
-else:
-    svFiles.insert( 0, Path('rtl/core-v-mcu/top/core_v_mcu.sv' ))
 
 if svTranslator == 'svase':
     ruleSvase = Svase.mkRule( 'svase'
                             , '{}.v'.format( topName )
                             , svFiles
+                            , top=topName
                             , svargs =[ '--timescale=1ns/1ps' ]
                             , defines=defines
                             , incdirs=incdirs
                             , libdirs=libdirs
                             )
-else:
+    ruleYosys = Yosys.mkRule( 'yosys', '{}.v'.format( topName ), blackboxes=[ 'pPLL02F.v' ] )
+elif svTranslator == 'sv2v':
     ruleSv2v = Sv2v.mkRule( 'sv2v'
                           , '{}.v'.format( topName )
                           , svFiles
+                          , top=topName
                           , defines=defines
                           , incdirs=incdirs
                           , libdirs=libdirs
                           )
-ruleYosys = Yosys   .mkRule( 'yosys', '{}.v'.format( topName ), blackboxes=[ 'pPLL02F.v' ] )
+    ruleYosys = Yosys.mkRule( 'yosys', '{}.v'.format( topName ), blackboxes=[ 'pPLL02F.v' ] )
+elif svTranslator == 'synlig':
+    ruleYosys = Yosys.mkRule( 'synlig'
+                            , svFiles
+                            , top       =topName
+                            , blackboxes=[ 'pPLL02F.v' ]
+                            , svOptions =[ '-timescale=1ns/1ps' ]
+                            , svDefines =defines
+                            , svIncdirs =incdirs
+                            , svLibdirs =libdirs
+                            , flags     = Yosys.FlagSystemVerilog
+                            )
+else:
+    print( '[ERROR] Unsupported SV_TRANSLATOR value "{}" (sv2v,svase,synlig)'.format( svTranslator ))
+
 ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ '{}.vst'.format( topName )
                                       , '{}.spi'.format( topName ) ]
                                     , [ruleYosys]

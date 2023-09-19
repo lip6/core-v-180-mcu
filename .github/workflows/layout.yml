@@ -111,7 +111,7 @@ jobs:
          repository: YosysHQ/yosys
          path:       coriolis-2.x/src/yosys
          ref:        yosys-0.24
-     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') &&  (inputs.svTranslator != 'surelog')  }}
        name: Build Yosys
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"

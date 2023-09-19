@@ -97,12 +97,12 @@ jobs:
          repository: chipsalliance/synlig
          path:       coriolis-2.x/src/synlig
      - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'surelog') }}
-       name: Build svase
+       name: Build Synlig/Surelog
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
          cd ${{ github.workspace }}/coriolis-2.x/src/synlig
          git submodule update --init --recursive third_party/{surelog,yosys}
-         sed -i -e 's,INSTALL_PATH=.*,INSTALL_PATH=${{ env.installDir }},'
+         sed -i -e 's,INSTALL_PATH=.*,INSTALL_PATH=${{ env.installDir }},' ./build_binaries.sh
          ./build_binaries.sh
 
      - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') &&  (inputs.svTranslator == 'surelog') }}

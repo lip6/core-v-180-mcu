@@ -303,17 +303,19 @@ for svObject in svObjects:
     libdirs += svObject.libdirs
     svFiles += svObject.svFiles
 
+pnrSuffix = '_cts_r'
 if svTranslator == 'svase':
-    topName = 'cv32e40p_alu_div'
-    ruleSV = Svase.mkRule( 'svase'
-                         , '{}.v'.format( topName )
-                         , svFiles
-                         , top=topName
-                         , svargs =[ '--timescale=1ns/1ps' ]
-                         , defines=defines
-                         , incdirs=incdirs
-                         , libdirs=libdirs
-                         )
+    pnrSuffix = '_r'
+    topName   = 'cv32e40p_alu_div'
+    ruleSV    = Svase.mkRule( 'svase'
+                            , '{}.v'.format( topName )
+                            , svFiles
+                            , top=topName
+                            , svargs =[ '--timescale=1ns/1ps' ]
+                            , defines=defines
+                            , incdirs=incdirs
+                            , libdirs=libdirs
+                            )
 elif svTranslator == 'sv2v':
     ruleSV  = Sv2v.mkRule( 'sv2v'
                          , '{}.v'.format( topName )
@@ -324,29 +326,31 @@ elif svTranslator == 'sv2v':
                          , libdirs=libdirs
                          )
 elif svTranslator == 'surelog':
-    topName = 'cv32e40p_alu_div'
-    ruleSV  = Surelog.mkRule( 'surelog'
-                            , svFiles
-                            , top     =topName
-                            , options =[ '-timescale=1ns/1ps' ]
-                            , defines =[ 'DISABLE_EFPGA=1' ]
-                            , incdirs =incdirs
-                            , libdirs =libdirs
-                            )
+    pnrSuffix = '_r'
+    topName   = 'cv32e40p_alu_div'
+    ruleSV    = Surelog.mkRule( 'surelog'
+                              , svFiles
+                              , top     =topName
+                              , options =[ '-timescale=1ns/1ps' ]
+                              , defines =[ 'DISABLE_EFPGA=1' ]
+                              , incdirs =incdirs
+                              , libdirs =libdirs
+                              )
 else:
     print( '[ERROR] Unsupported SV_TRANSLATOR value "{}" (sv2v,svase,surelog)'.format( svTranslator ))
 
 ruleYosys = Yosys.mkRule( 'yosys', [ruleSV], blackboxes=[ 'pPLL02F.v' ] )
-ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ '{}.vst'.format( topName )
-                                      , '{}.spi'.format( topName ) ]
-                                    , [ruleYosys]
-                                    , flags=0 )
-rulePnR   = PnR     .mkRule( 'pnr'  , [ '{}_cts_r.gds'.format( topName )
-                                      , '{}_cts_r.vst'.format( topName )
-                                      , '{}_cts_r.spi'.format( topName )
-                                      ]
-                                    , [ruleB2V]
-                                    , scriptMain )
+ruleB2V   = Blif2Vst.mkRule( 'b2v', [ '{}.vst'.format( topName )
+                                    , '{}.spi'.format( topName ) ]
+                                  , [ruleYosys]
+                                  , flags=0 )
+rulePnR   = PnR     .mkRule( 'pnr', [ '{}{}.gds'.format( topName, pnrSuffix )
+                                    , '{}{}.vst'.format( topName, pnrSuffix )
+                                    , '{}{}.spi'.format( topName, pnrSuffix )
+                                    ]
+                                  , [ruleB2V]
+                                  , scriptMain
+                                  , topName=topName )
 ruleCgt   = PnR     .mkRule( 'cgt' )
 ruleGds   = Alias   .mkRule( 'gds', [rulePnR] )
 ruleClean = Clean   .mkRule( [ 'lefRWarning.log', './slpp_all' ] )

@@ -42,9 +42,11 @@ def scriptMain ( **kw ):
         cg           = af.getCellGauge()
         sliceHeight  = cg.getSliceHeight()
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( 'cv32e40p_core', Catalog.State.Logical )
+        topName      = 'cv32e40p_core'
+        if 'loadCell' in kw: topName = kw[ 'loadCell' ]
+        cell = af.getCell( topName, Catalog.State.Logical )
         if not cell:
-            cell = Blif.load( 'cv32e40p_core' )
+            cell = Blif.load( topName )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )

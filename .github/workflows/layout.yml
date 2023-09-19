@@ -10,6 +10,7 @@ on:
         options:
           - sv2v
           - svase
+          - surelog
 
 env:
    installDir:   ${{ github.workspace }}/coriolis-2.x/Linux.x86_64/Release.Shared/install
@@ -89,7 +90,22 @@ jobs:
          mkdir -p ${{ env.installDir }}/bin
          cp ./build/svase ${{ env.installDir }}/bin
 
-     - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'surelog') }}
+       uses: actions/checkout@v3
+       with:
+         submodules: true
+         repository: chipsalliance/synlig
+         path:       coriolis-2.x/src/synlig
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') && (inputs.svTranslator == 'surelog') }}
+       name: Build svase
+       run: |
+         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+         cd ${{ github.workspace }}/coriolis-2.x/src/synlig
+         git submodule update --init --recursive third_party/{surelog,yosys}
+         sed -i -e 's,INSTALL_PATH=.*,INSTALL_PATH=${{ env.installDir }},'
+         ./build_binaries.sh
+
+     - if:   ${{ (steps.cache-tools.outputs.cache-hit != 'true') &&  (inputs.svTranslator == 'surelog') }}
        uses: actions/checkout@v3
        with:
          repository: YosysHQ/yosys

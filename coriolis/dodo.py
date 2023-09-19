@@ -15,6 +15,7 @@ from coriolis                     import CRL
 from coriolis.designflow.pnr      import PnR
 from coriolis.designflow.sv2v     import Sv2v
 from coriolis.designflow.svase    import Svase
+from coriolis.designflow.surelog  import Surelog
 from coriolis.designflow.yosys    import Yosys
 from coriolis.designflow.blif2vst import Blif2Vst
 from coriolis.designflow.alias    import Alias
@@ -254,15 +255,40 @@ class UVMFiles ( object ):
 
 from doDesign  import scriptMain
 
-svTranslator = 'synlig'
+svTranslator = 'surelog'
 if 'SV_TRANSLATOR' in os.environ:
     svTranslator = os.environ['SV_TRANSLATOR'].lower()
 
 buildCv32 = True
 if buildCv32:
     svObjects = [ Cv32e40pFiles( 'rtl' ) ]
-    topName   = 'cv32e40p_core'
-   #topName   = 'cv32e40p_alu_div'
+   #topName = 'cv32e40p_aligner'
+   #topName = 'cv32e40p_alu_div'
+   #topName = 'cv32e40p_alu'
+   #topName = 'cv32e40p_apu_disp'
+   #topName = 'cv32e40p_compressed_decoder'
+   #topName = 'cv32e40p_controller'
+    topName = 'cv32e40p_core'                # KO
+   #topName = 'cv32e40p_cs_registers'
+   #topName = 'cv32e40p_decoder'             # KO
+   #topName = 'cv32e40p_ex_stage'
+   #topName = 'cv32e40p_ff_one'
+   #topName = 'cv32e40p_fifo'
+   #topName = 'cv32e40p_hwloop_regs'
+   #topName = 'cv32e40p_id_stage'            # KO
+   #topName = 'cv32e40p_if_stage'            # KO / Yosys (\TRANSPARENT redefined)
+   #topName = 'cv32e40p_int_controller'
+   #topName = 'cv32e40p_load_store_unit'     # KO / Yosys (\TRANSPARENT redefined)
+   #topName = 'cv32e40p_mult'
+   #topName = 'cv32e40p_obi_interface'
+   #topName = 'cv32e40p_popcnt'
+   #topName = 'cv32e40p_prefetch_buffer'    # KO / Yosys (\TRANSPARENT redefined)
+   #topName = 'cv32e40p_prefetch_controller'
+   #topName = 'cv32e40p_register_file'      # _ff version.
+   #topName = 'cv32e40p_sleep_unit'
+              
+   #topName = 'cv32e40p_top'
+   #topName = 'cv32e40p_wrapper '            # KO
 else:
     svObjects = [ UVMFiles(), CoreVFiles( 'rtl' ) ]
     topName   = 'core_v_mcu'
@@ -278,40 +304,39 @@ for svObject in svObjects:
     svFiles += svObject.svFiles
 
 if svTranslator == 'svase':
-    ruleSvase = Svase.mkRule( 'svase'
-                            , '{}.v'.format( topName )
-                            , svFiles
-                            , top=topName
-                            , svargs =[ '--timescale=1ns/1ps' ]
-                            , defines=defines
-                            , incdirs=incdirs
-                            , libdirs=libdirs
-                            )
-    ruleYosys = Yosys.mkRule( 'yosys', '{}.v'.format( topName ), blackboxes=[ 'pPLL02F.v' ] )
+    topName = 'cv32e40p_alu_div'
+    ruleSV = Svase.mkRule( 'svase'
+                         , '{}.v'.format( topName )
+                         , svFiles
+                         , top=topName
+                         , svargs =[ '--timescale=1ns/1ps' ]
+                         , defines=defines
+                         , incdirs=incdirs
+                         , libdirs=libdirs
+                         )
 elif svTranslator == 'sv2v':
-    ruleSv2v = Sv2v.mkRule( 'sv2v'
-                          , '{}.v'.format( topName )
-                          , svFiles
-                          , top=topName
-                          , defines=defines
-                          , incdirs=incdirs
-                          , libdirs=libdirs
-                          )
-    ruleYosys = Yosys.mkRule( 'yosys', '{}.v'.format( topName ), blackboxes=[ 'pPLL02F.v' ] )
-elif svTranslator == 'synlig':
-    ruleYosys = Yosys.mkRule( 'synlig'
+    ruleSV  = Sv2v.mkRule( 'sv2v'
+                         , '{}.v'.format( topName )
+                         , svFiles
+                         , top=topName
+                         , defines=defines
+                         , incdirs=incdirs
+                         , libdirs=libdirs
+                         )
+elif svTranslator == 'surelog':
+    topName = 'cv32e40p_alu_div'
+    ruleSV  = Surelog.mkRule( 'surelog'
                             , svFiles
-                            , top       =topName
-                            , blackboxes=[ 'pPLL02F.v' ]
-                            , svOptions =[ '-timescale=1ns/1ps' ]
-                            , svDefines =defines
-                            , svIncdirs =incdirs
-                            , svLibdirs =libdirs
-                            , flags     = Yosys.FlagSystemVerilog
+                            , top     =topName
+                            , options =[ '-timescale=1ns/1ps' ]
+                            , defines =[ 'DISABLE_EFPGA=1' ]
+                            , incdirs =incdirs
+                            , libdirs =libdirs
                             )
 else:
-    print( '[ERROR] Unsupported SV_TRANSLATOR value "{}" (sv2v,svase,synlig)'.format( svTranslator ))
+    print( '[ERROR] Unsupported SV_TRANSLATOR value "{}" (sv2v,svase,surelog)'.format( svTranslator ))
 
+ruleYosys = Yosys.mkRule( 'yosys', [ruleSV], blackboxes=[ 'pPLL02F.v' ] )
 ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ '{}.vst'.format( topName )
                                       , '{}.spi'.format( topName ) ]
                                     , [ruleYosys]
@@ -324,4 +349,4 @@ rulePnR   = PnR     .mkRule( 'pnr'  , [ '{}_cts_r.gds'.format( topName )
                                     , scriptMain )
 ruleCgt   = PnR     .mkRule( 'cgt' )
 ruleGds   = Alias   .mkRule( 'gds', [rulePnR] )
-ruleClean = Clean   .mkRule( 'lefRWarning.log' )
+ruleClean = Clean   .mkRule( [ 'lefRWarning.log', './slpp_all' ] )

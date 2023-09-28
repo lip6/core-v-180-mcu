@@ -259,6 +259,7 @@ svTranslator = 'sv2v'
 if 'SV_TRANSLATOR' in os.environ:
     svTranslator = os.environ['SV_TRANSLATOR'].lower()
 
+buildChip = True
 buildCv32 = True
 if buildCv32:
     svObjects = [ Cv32e40pFiles( 'rtl' ) ]
@@ -303,9 +304,7 @@ for svObject in svObjects:
     libdirs += svObject.libdirs
     svFiles += svObject.svFiles
 
-pnrSuffix = '_cts_r'
 if svTranslator == 'svase':
-    pnrSuffix = '_r'
     topName   = 'cv32e40p_alu_div'
     ruleSV    = Svase.mkRule( 'svase'
                             , '{}.v'.format( topName )
@@ -326,7 +325,6 @@ elif svTranslator == 'sv2v':
                          , libdirs=libdirs
                          )
 elif svTranslator == 'surelog':
-    pnrSuffix = '_r'
     topName   = 'cv32e40p_alu_div'
     ruleSV    = Surelog.mkRule( 'surelog'
                               , svFiles
@@ -339,15 +337,31 @@ elif svTranslator == 'surelog':
 else:
     print( '[ERROR] Unsupported SV_TRANSLATOR value "{}" (sv2v,svase,surelog)'.format( svTranslator ))
 
+if buildChip:
+    pnrFiles = [ 'chip_r.gds'
+               , 'chip_r.vst'
+               , 'chip_r.spi'
+               , 'chip.vst'
+               , 'chip.spi'
+               , 'corona_cts_r.vst'
+               , 'corona_cts_r.spi'
+               , 'corona.vst'
+               , 'corona.spi'
+               , '{}_cts.vst'.format( topName )
+               , '{}_cts.spi'.format( topName )
+               ]
+else:
+    pnrFiles = [ '{}_cts_r.gds'.format( topName )
+               , '{}_cts_r.vst'.format( topName )
+               , '{}_cts_r.spi'.format( topName )
+               ]
+
 ruleYosys = Yosys.mkRule( 'yosys', [ruleSV], blackboxes=[ 'pPLL02F.v' ] )
 ruleB2V   = Blif2Vst.mkRule( 'b2v', [ '{}.vst'.format( topName )
                                     , '{}.spi'.format( topName ) ]
                                   , [ruleYosys]
                                   , flags=0 )
-rulePnR   = PnR     .mkRule( 'pnr', [ '{}{}.gds'.format( topName, pnrSuffix )
-                                    , '{}{}.vst'.format( topName, pnrSuffix )
-                                    , '{}{}.spi'.format( topName, pnrSuffix )
-                                    ]
+rulePnR   = PnR     .mkRule( 'pnr', pnrFiles
                                   , [ruleB2V]
                                   , scriptMain
                                   , topName=topName )

@@ -102,7 +102,7 @@ def scriptMain ( **kw ):
         conf.editor              = editor
         conf.useSpares           = True
         conf.useClockTree        = True
-        conf.useHFNS             = True
+        conf.useHFNS             = buildChip
         conf.bColumns            = 2
         conf.bRows               = 2
         conf.chipName            = 'chip'

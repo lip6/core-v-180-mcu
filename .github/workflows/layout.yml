@@ -139,7 +139,7 @@ jobs:
        with:
          repository: lip6/coriolis
          submodules: true
-         ref:        wip-gf180mcu
+         ref:        wip-gf180mcu-2
          path:       coriolis-2.x/src/coriolis
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        name: Build Coriolis
@@ -163,7 +163,7 @@ jobs:
          path: |
            ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core.v
            ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core.blif
-           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.gds
-           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.vst
-           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/cv32e40p_core_cts_r.spi
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/chip_r.gds
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/chip_r.vst
+           ${{ github.workspace }}/coriolis-2.x/src/core-v-180-mcu/coriolis/chip_r.spi
          retention-days: 5

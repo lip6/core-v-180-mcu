@@ -255,7 +255,7 @@ class UVMFiles ( object ):
 
 from doDesign  import scriptMain
 
-svTranslator = 'surelog'
+svTranslator = 'sv2v'
 if 'SV_TRANSLATOR' in os.environ:
     svTranslator = os.environ['SV_TRANSLATOR'].lower()
 

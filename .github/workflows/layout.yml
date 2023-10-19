@@ -140,7 +140,7 @@ jobs:
        name: Build Coriolis
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-         cd {{ github.workspace }}/coriolis-2.x/src/coriolis
+         cd ${{ github.workspace }}/coriolis-2.x/src/coriolis
          make -f Makefile.LIP6 install
      - name: Check for binaries
        run: ls -1 ${{ github.workspace }}/coriolis-2.x/release/install/bin

@@ -142,7 +142,7 @@ jobs:
        run: |
          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
          cd ${{ github.workspace }}/coriolis-2.x/src/coriolis
-         make -f Makefile.LIP6 SRC_DIR=${{ github.workspace }}/coriolis-2.x/src install
+         make -f Makefile.LIP6 SRC_DIR=${{ github.workspace }}/coriolis-2.x/src REGRESSION_DIR=/work/core-v-180-mcu/core-v-180-mcu install
      - name: Check for binaries
        run: ls -1 ${{ github.workspace }}/coriolis-2.x/release/install/bin
 

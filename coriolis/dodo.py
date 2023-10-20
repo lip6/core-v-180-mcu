@@ -357,8 +357,7 @@ else:
                ]
 
 ruleYosys = Yosys.mkRule( 'yosys', [ruleSV], blackboxes=[ 'pPLL02F.v' ] )
-ruleB2V   = Blif2Vst.mkRule( 'b2v', [ '{}.vst'.format( topName )
-                                    , '{}.spi'.format( topName ) ]
+ruleB2V   = Blif2Vst.mkRule( 'b2v', [ '{}.vst'.format( topName ) ]
                                   , [ruleYosys]
                                   , flags=0 )
 rulePnR   = PnR     .mkRule( 'pnr', pnrFiles

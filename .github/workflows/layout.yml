@@ -135,7 +135,7 @@ jobs:
        with:
          repository: lip6/coriolis
          submodules: true
-         ref:        wip-gf180mcu_c4m-4
+         ref:        main
          path:       coriolis-2.x/src/coriolis
      - if:   ${{ steps.cache-tools.outputs.cache-hit != 'true' }}
        name: Build Coriolis
